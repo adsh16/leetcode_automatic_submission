@@ -1,0 +1,38 @@
+# The cron syntax for GitHub Actions consists of five fields: minute hour day-of-month month day-of-week. The values are in UTC.
+
+# minute: The minute of the hour (0-59)
+# hour: The hour of the day (0-23, where 0 is midnight and 23 is 11 PM)
+# day-of-month: The day of the month (1-31)
+# month: The month (1-12)
+# day-of-week: The day of the week (0-6, where 0 is Sunday)
+
+
+name: Daily LeetCode Submission
+
+on:
+  # workflow_dispatch: # to run the script manually from actions tab
+  
+  # using cron to schedule the task 
+  schedule:
+    - cron: '30 15 * * *'  # Runs daily 
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true  # Enforce Node.js 20 usage
+      LEETCODE_USERNAME: ${{ secrets.LEETCODE_USERNAME }}
+      LEETCODE_PASSWORD: ${{ secrets.LEETCODE_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install selenium
+      - name: Run the script
+        run: |
+          python leetcode_submission_bot.py
